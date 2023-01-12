@@ -1,0 +1,45 @@
+defmodule Inventory do
+  defstruct [:name, :quantity, :price]
+
+  def create(name, quantity, price) do
+    %Inventory{name: name, quantity: quantity, price: price}
+  end
+
+  def update_quantity(inventory, change) do
+    if inventory.quantity + change < 0 do
+      {:error, :insufficient_quantity}
+    else
+      %{inventory | quantity: inventory.quantity + change}
+    end
+  end
+
+  def update_price(inventory, new_price) do
+    %{inventory | price: new_price}
+  end
+
+  def purchase(inventory, quantity) do
+    case update_quantity(inventory, -quantity) do
+      {:error, :insufficient_quantity} ->
+        {:error, :insufficient_quantity}
+      updated_inventory ->
+        {:ok, updated_inventory}
+    end
+  end
+
+  def restock(inventory, quantity) do
+    update_quantity(inventory, quantity)
+  end
+
+  def report(inventory) do
+    IO.puts("Inventory Report")
+    IO.puts("----------------")
+    IO.puts("Name: #{inventory.name}")
+    IO.puts("Quantity: #{inventory.quantity}")
+    IO.puts("Price: #{inventory.price}")
+  end
+
+  def reduce_price(inventory, percentage) do
+    new_price = inventory.price - (inventory.price * percentage / 100)
+    update_price(inventory, new_price)
+  end
+end
