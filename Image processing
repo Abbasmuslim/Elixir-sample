@@ -1,0 +1,23 @@
+defmodule ImageProcessor do
+  def resize(image, percent) do
+    image
+    |> Image.scale(percent)
+    |> Image.crop(0, 0, Image.width(image) * percent, Image.height(image) * percent)
+    |> Image.rotate(45)
+    |> Image.flip
+    |> Image.brighten(10)
+    |> Image.contrast(20)
+  end
+
+  def process(image_path, output_path) do
+    image = Image.load(image_path)
+    image = resize(image, 0.5)
+    Image.save(image, output_path)
+  end
+
+  def process_folder(folder_path, output_path) do
+    for image_path <- Path.wildcard("#{folder_path}/*.jpg") do
+      process("#{folder_path}/#{image_path}", "#{output_path}/#{image_path}")
+    end
+  end
+end
